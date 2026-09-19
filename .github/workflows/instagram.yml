@@ -1,0 +1,32 @@
+# Réveil gratuit : publie sur Instagram, à l'heure de Paris, les vidéos inscrites dans publication/file-attente.json.
+# Ce fichier vit dans le dépôt public grimoire-videos (copié depuis le projet par scripts/hebergement.js).
+# GitHub exécute le planificateur en UTC : réveils à 10 h, 11 h, 18 h et 19 h UTC (midi et 20 h à Paris, été comme hiver) ;
+# le script ne publie que ce qui est dû, puis retire la vidéo et met la file à jour dans ce même dépôt.
+# Secrets à créer dans ce dépôt (Settings → Secrets and variables → Actions) : META_PAGE_ID, META_PAGE_TOKEN, META_IG_ID.
+name: Instagram
+on:
+  schedule:
+    - cron: '0 10,11,18,19 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: instagram
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Publier ce qui est dû
+        env:
+          META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
+          META_PAGE_TOKEN: ${{ secrets.META_PAGE_TOKEN }}
+          META_IG_ID: ${{ secrets.META_IG_ID }}
+          HEBERGEMENT: github
+          GH_VIDEOS_REPO: ${{ github.repository }}
+          GH_TOKEN_ACTION: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/meta.js --publier-attente
