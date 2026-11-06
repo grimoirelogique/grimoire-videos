@@ -1,0 +1,73 @@
+# Réveil gratuit : publie sur Instagram, à l'heure de Paris, les vidéos inscrites dans publication/file-attente.json.
+# Ce fichier vit dans le dépôt public grimoire-videos (copié depuis le projet par scripts/hebergement.js).
+# GitHub exécute le planificateur en UTC : réveils à 10 h, 11 h, 18 h et 19 h UTC (midi et 20 h à Paris, été comme hiver) ;
+# le script ne publie que ce qui est dû, puis retire la vidéo et met la file à jour dans ce même dépôt.
+# Secrets à créer dans ce dépôt (Settings → Secrets and variables → Actions) : META_PAGE_ID, META_PAGE_TOKEN, META_IG_ID.
+name: Instagram
+on:
+  schedule:
+    - cron: '0 10,11,18,19 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  issues: write
+concurrency: instagram
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Publier ce qui est dû
+        env:
+          META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
+          META_PAGE_TOKEN: ${{ secrets.META_PAGE_TOKEN }}
+          META_IG_ID: ${{ secrets.META_IG_ID }}
+          HEBERGEMENT: github
+          GH_VIDEOS_REPO: ${{ github.repository }}
+          GH_TOKEN_ACTION: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/meta.js --publier-attente | tee sortie.txt
+
+      # Facebook bride les envois groupés (code 368). On en programme quelques-uns à chaque passage :
+      # quatre passages par jour rattrapent un calendrier entier en deux ou trois jours, sans anti-spam.
+      - name: Programmer quelques Reels Facebook
+        env:
+          META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
+          META_PAGE_TOKEN: ${{ secrets.META_PAGE_TOKEN }}
+          META_IG_ID: ${{ secrets.META_IG_ID }}
+          HEBERGEMENT: github
+          GH_VIDEOS_REPO: ${{ github.repository }}
+          GH_TOKEN_ACTION: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/meta.js --facebook-attente --max 6
+
+      # Panne sèche : prévenir par un ticket (GitHub envoie un e-mail) avant que le compte ne devienne muet.
+      # On lit publication/couverture.json, déposé depuis le Mac par « node scripts/couverture.js --ecrire »,
+      # et on recalcule la marge à partir des dates : un bilan vieux de plusieurs jours reste donc exact.
+      - name: Alerter si une plateforme arrive en fin de programmation
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          [ -f publication/couverture.json ] || { echo "pas de bilan de couverture"; exit 0; }
+          alerte=$(node -e 'const b=require("./publication/couverture.json");const a=new Date(new Date().toISOString().slice(0,10));const r=[];for(const[p,d]of Object.entries(b.couvert||{})){const m=d?Math.round((new Date(d)-a)/86400000):-1;if(m<5)r.push(p+" : "+(m<0?"rien":m+" jour(s)"));}console.log(r.join(" · "));')
+          echo "marges basses : ${alerte:-aucune}"
+          [ -z "$alerte" ] && exit 0
+          if [ -n "$(gh issue list -R "$GITHUB_REPOSITORY" --state open --label alimentation --json number --jq '.[0].number')" ]; then
+            echo "ticket deja ouvert"; exit 0
+          fi
+          gh label create alimentation -R "$GITHUB_REPOSITORY" --color D93F0B --description "File de publication" 2>/dev/null || true
+          {
+            printf 'Plateformes en fin de programmation : %s\n\n' "$alerte"
+            printf 'Sur le Mac, dans le dossier Grimoire Logique :\n\n'
+            printf '    node scripts/meta.js --envoyer --jours 30\n'
+            printf '    node scripts/youtube.js --envoyer --jours 30\n'
+            printf '    node scripts/couverture.js --ecrire\n\n'
+            printf 'Facebook se rattrape seul, quelques Reels a chaque reveil.\n'
+            printf 'YouTube plafonne a 100 envois par jour.\n\n'
+            printf 'Ferme ce ticket une fois fait.\n'
+          } > corps.md
+          gh issue create -R "$GITHUB_REPOSITORY" --label alimentation --title "Programmation bientot epuisee" --body-file corps.md
