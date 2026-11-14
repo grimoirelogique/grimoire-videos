@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grimoire Logique — règles de confidentialité</title>
+<style>
+  :root { color-scheme: light dark; --encre:#211D17; --papier:#C9B896; --cuir:#1E1712; --ambre:#C08A2E; }
+  body { margin:0; padding:48px 16px; background:var(--papier); color:var(--encre);
+         font:17px/1.65 Georgia,"Times New Roman",serif; }
+  main { max-width:34rem; margin:0 auto; }
+  h1 { font-size:1.6rem; letter-spacing:.02em; margin:0 0 .2rem; }
+  h2 { font-size:.95rem; letter-spacing:.14em; text-transform:uppercase;
+       font-family:system-ui,sans-serif; margin:2.4rem 0 .6rem; }
+  .sous { font-style:italic; opacity:.75; margin:0 0 1.2rem; }
+  hr { border:0; border-top:1px solid currentColor; opacity:.25; margin:1.6rem 0; }
+  a { color:inherit; text-decoration-color:var(--ambre); text-underline-offset:3px; }
+  nav { margin-top:2.5rem; font-family:system-ui,sans-serif; font-size:.85rem; letter-spacing:.06em; }
+  nav a { margin-right:1.2rem; }
+  code { font-family:ui-monospace,Menlo,monospace; font-size:.85em; word-break:break-all; }
+  @media (prefers-color-scheme: dark) { body { background:var(--cuir); color:var(--papier); } }
+</style>
+<main>
+
+  <h1>Règles de confidentialité</h1>
+  <p class="sous">Grimoire Logique — dernière mise à jour : 18 septembre 2026</p>
+  <hr>
+  <p>Ce document décrit les données auxquelles l'application <strong>Grimoire Logique</strong> accède,
+     l'usage qu'elle en fait, et ce qu'elle en conserve. L'application est un outil personnel en ligne
+     de commande, utilisé par son seul auteur, Loïc Desclaux, pour publier ses propres vidéos sur ses
+     propres comptes.</p>
+
+  <h2>Données auxquelles l'application accède</h2>
+  <p>L'application demande une seule autorisation Google, le niveau d'accès
+     <code>https://www.googleapis.com/auth/youtube.upload</code>. Cette autorisation permet
+     uniquement d'<strong>envoyer une vidéo sur la chaîne YouTube du compte qui a autorisé</strong>,
+     c'est-à-dire la chaîne de l'auteur.</p>
+  <p>L'application <strong>ne lit pas</strong> les statistiques de la chaîne, les commentaires, les
+     abonnés, les listes de lecture, les messages, le profil, ni les coordonnées de qui que ce soit.
+     Elle ne demande aucun autre niveau d'accès, à Google ou ailleurs.</p>
+
+  <h2>Usage qui en est fait</h2>
+  <p>L'autorisation sert exclusivement à envoyer les vidéos d'énigmes produites par l'auteur sur sa
+     propre chaîne, et à fixer leur date de diffusion. Aucun autre usage n'en est fait.</p>
+  <p>Les données Google obtenues par l'application sont soumises à la
+     <a href="https://developers.google.com/terms/api-services-user-data-policy">règle relative aux
+     données utilisateur des services d'API Google</a>, y compris à ses exigences d'utilisation
+     limitée.</p>
+
+  <h2>Données conservées</h2>
+  <p>La seule information conservée est l'<strong>identifiant des vidéos envoyées par l'auteur</strong>,
+     ainsi que leur date de diffusion. Ces informations sont stockées dans un fichier local, sur
+     l'ordinateur de l'auteur, dans le seul but d'éviter qu'une même vidéo soit envoyée deux fois.</p>
+  <p>Le jeton d'autorisation est lui aussi conservé en local, sur l'ordinateur de l'auteur, dans un
+     fichier exclu de tout dépôt de code. Il n'est jamais transmis ni publié.</p>
+
+  <h2>Partage et transfert</h2>
+  <p>Aucune donnée n'est partagée, vendue, louée, ni transmise à un tiers, à un service d'analyse, à
+     un annonceur ou à un modèle d'intelligence artificielle. L'application ne dispose d'aucun serveur :
+     elle s'exécute uniquement sur l'ordinateur de son auteur.</p>
+
+  <h2>Conservation et suppression</h2>
+  <p>L'auteur peut supprimer à tout moment les fichiers locaux décrits ci-dessus, ce qui efface toute
+     information conservée par l'application. Aucune copie n'existe ailleurs.</p>
+
+  <h2>Retirer l'autorisation</h2>
+  <p>L'accès accordé à l'application peut être révoqué à tout moment depuis les réglages du compte
+     Google, à l'adresse
+     <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>.
+     La révocation prend effet immédiatement et l'application ne peut plus rien envoyer.</p>
+
+  <h2>Enfants</h2>
+  <p>L'application n'a pas d'utilisateur autre que son auteur, adulte, et ne s'adresse donc pas aux
+     enfants. Elle ne collecte aucune donnée les concernant.</p>
+
+  <h2>Modifications</h2>
+  <p>Toute modification de ces règles sera publiée sur cette page, avec une nouvelle date de mise à jour.</p>
+
+  <h2>Contact</h2>
+  <p>Loïc Desclaux — <a href="mailto:loic.desclaux@hal-audio.com">loic.desclaux@hal-audio.com</a></p>
+
+  <hr>
+  <h2>English summary</h2>
+  <p><strong>Grimoire Logique</strong> is a personal command-line application used by its sole author to
+     upload his own puzzle videos to his own accounts. It requests a single Google scope,
+     <code>youtube.upload</code>, which only allows uploading videos to the authorising account's own
+     channel. It does not read analytics, comments, subscribers, playlists or profile data, and requests
+     no other scope.</p>
+  <p>The only data retained is the identifier and scheduled date of the videos the author has uploaded
+     himself, stored locally on his computer so that a video is never uploaded twice. The authorisation
+     token is likewise stored locally and never transmitted or published.</p>
+  <p>Nothing is shared, sold or transferred to any third party, analytics provider, advertiser or AI
+     model. The application has no server and runs only on its author's computer. Its use of Google
+     user data follows the
+     <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services
+     User Data Policy</a>, including the Limited Use requirements. Access can be revoked at any time at
+     <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>.</p>
+  <p>Contact: Loïc Desclaux — <a href="mailto:loic.desclaux@hal-audio.com">loic.desclaux@hal-audio.com</a></p>
+<nav><a href="./">Accueil</a><a href="./confidentialite.html">Confidentialité</a><a href="./conditions.html">Conditions</a></nav>
+</main>
+</html>
